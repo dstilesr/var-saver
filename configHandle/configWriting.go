@@ -5,9 +5,16 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/pelletier/go-toml/v2"
 )
+
+// Update Sets the metadata's last updated time to the current UTC timestamp
+func (m *Metadata) Update() {
+	curr_time := time.Now().UTC().Format(time.RFC3339)
+	m.LastUpdated = curr_time
+}
 
 // SaveCfg saves the configuration to the config file path
 func (sv *SavedVariables) SaveCfg() error {
@@ -22,6 +29,7 @@ func (sv *SavedVariables) SaveCfg() error {
 	}
 	defer f.Close()
 
+	sv.Meta.Update()
 	err = toml.NewEncoder(f).Encode(sv)
 	if err != nil {
 		slog.Error("Unable to encode TOML to file!", "error", err)

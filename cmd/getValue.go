@@ -19,7 +19,7 @@ func RunGetValue(cmd *cobra.Command, args []string) error {
 
 	sv := cfgh.ReadConfig()
 
-	pNorm := strings.ToLower(proj)
+	pNorm := strings.ToLower(strings.TrimSpace(proj))
 	p, ok := sv.Projects[pNorm]
 	if !ok {
 		return fmt.Errorf("project '%s' not found", proj)

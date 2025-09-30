@@ -11,7 +11,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "var-saver",
+	Use:   "var-saver [command] [options]",
 	Short: "VarSaver helps you manage variables and values in a local environment",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:

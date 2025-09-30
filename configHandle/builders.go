@@ -5,16 +5,14 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/pelletier/go-toml/v2"
 )
 
 // GetMetadata Instantiates a metadata object
 func GetMetadata() *Metadata {
-	curr_time := time.Now().UTC().Format(time.RFC3339)
 	return &Metadata{
-		LastUpdated: curr_time,
+		LastUpdated: "",
 		AppName:     AppName,
 		Version:     Version,
 	}

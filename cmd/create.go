@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	cfgh "var-saver/configHandle"
 
 	"github.com/spf13/cobra"
@@ -18,19 +19,19 @@ func ValidateCreate(cmd *cobra.Command, args []string) error {
 	val, _ := cmd.Flags().GetString("value")
 
 	// Check inputs
-	if name == "" {
+	if strings.TrimSpace(name) == "" {
 		return fmt.Errorf("ERROR: You must provide a nonempty variable name")
 	}
 
-	if project == "" {
+	if strings.TrimSpace(project) == "" {
 		return fmt.Errorf("ERROR: Project name cannot be empty")
 	}
 
-	if env == "" {
+	if strings.TrimSpace(env) == "" {
 		return fmt.Errorf("ERROR: Environment name cannot be empty")
 	}
 
-	if val == "" {
+	if strings.TrimSpace(val) == "" {
 		return fmt.Errorf("ERROR: You must provide a nonempty value")
 	}
 	return nil
@@ -43,6 +44,11 @@ func RunCreate(cmd *cobra.Command, args []string) error {
 	env, _ := cmd.Flags().GetString("environment")
 	val, _ := cmd.Flags().GetString("value")
 	ow, _ := cmd.Flags().GetBool("overwrite")
+
+	project = strings.TrimSpace(project)
+	name = strings.TrimSpace(name)
+	val = strings.TrimSpace(val)
+	env = strings.TrimSpace(env)
 
 	sv := cfgh.ReadConfig()
 	defer sv.SaveCfg()
@@ -87,12 +93,13 @@ func init() {
 	rootCmd.AddCommand(createCmd)
 
 	// Flags + settings
-	createCmd.Flags().String("name", "", "Name of variable to add")
+	createCmd.Flags().StringP("name", "n", "", "Name of variable to add")
 	createCmd.Flags().String("value", "", "Value of the variable")
 
-	createCmd.Flags().String("project", "common", "Name of project related to variable")
-	createCmd.Flags().String(
+	createCmd.Flags().StringP("project", "p", "common", "Name of project related to variable")
+	createCmd.Flags().StringP(
 		"environment",
+		"e",
 		"default",
 		"Name of environment associated to var to add",
 	)
