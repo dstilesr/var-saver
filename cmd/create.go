@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Copyright © 2025 NAME HERE
 */
 package cmd
 
@@ -63,7 +63,7 @@ func RunCreate(cmd *cobra.Command) error {
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
-	Use:   "create",
+	Use:   "create --name <variable name> --value <variable value> [--project <project name>] [--environment <env name>] [--overwrite]",
 	Short: "Create a new variable.",
 	Long: `Create a new variable for later reference.
 To create a variable you must provide the variable name and value. You can
