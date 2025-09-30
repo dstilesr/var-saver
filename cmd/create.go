@@ -1,40 +1,109 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	cfgh "var-saver/configHandle"
 
 	"github.com/spf13/cobra"
 )
 
+// ValidateCreate Validates the inpút flags / args to the create command
+func ValidateCreate(cmd *cobra.Command, args []string) error {
+	name, _ := cmd.Flags().GetString("name")
+	project, _ := cmd.Flags().GetString("project")
+	env, _ := cmd.Flags().GetString("environment")
+	val, _ := cmd.Flags().GetString("value")
+
+	// Check inputs
+	if name == "" {
+		return fmt.Errorf("ERROR: You must provide a nonempty variable name")
+	}
+
+	if project == "" {
+		return fmt.Errorf("ERROR: Project name cannot be empty")
+	}
+
+	if env == "" {
+		return fmt.Errorf("ERROR: Environment name cannot be empty")
+	}
+
+	if val == "" {
+		return fmt.Errorf("ERROR: You must provide a nonempty value")
+	}
+	return nil
+}
+
+// RunCreate Runs the command to add a new variable
+func RunCreate(cmd *cobra.Command) error {
+	name, _ := cmd.Flags().GetString("name")
+	project, _ := cmd.Flags().GetString("project")
+	env, _ := cmd.Flags().GetString("environment")
+	val, _ := cmd.Flags().GetString("value")
+	ow, _ := cmd.Flags().GetBool("overwrite")
+
+	sv := cfgh.ReadConfig()
+	defer sv.SaveCfg()
+
+	err := sv.AddVariable(project, name, env, val, ow)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf(
+		"Variable '%s' for project '%s' (%s) added successfully!\n",
+		name,
+		project,
+		env,
+	)
+	return nil
+}
+
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Create a new variable.",
+	Long: `Create a new variable for later reference.
+To create a variable you must provide the variable name and value. You can
+optionally provide a project name and environment, but these will default to
+"common" and "default" respectively. To overwrite an existing variable, use
+the '--overwrite' flag.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create called")
+Usage examples:
+
+var-saver create --name "some-api-url" --value "https://my-api.com"
+
+var-saver create --name "some-api-url" --value "https://my-api.com" --overwrite
+
+var-saver create --name "some-api-url" --value "https://my-api.com" --project "my-project" --environment "dev"
+`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return RunCreate(cmd)
 	},
+	PreRunE: ValidateCreate,
 }
 
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	// Here you will define your flags and configuration settings.
+	// Flags + settings
+	createCmd.Flags().String("name", "", "Name of variable to add")
+	createCmd.Flags().String("value", "", "Value of the variable")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
+	createCmd.Flags().String("project", "common", "Name of project related to variable")
+	createCmd.Flags().String(
+		"environment",
+		"default",
+		"Name of environment associated to var to add",
+	)
+	createCmd.Flags().Bool(
+		"overwrite",
+		false,
+		"Whether to overwrite the variable if it exists",
+	)
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	createCmd.MarkFlagRequired("name")
+	createCmd.MarkFlagRequired("value")
 }
