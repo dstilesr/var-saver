@@ -37,7 +37,7 @@ func ValidateCreate(cmd *cobra.Command, args []string) error {
 }
 
 // RunCreate Runs the command to add a new variable
-func RunCreate(cmd *cobra.Command) error {
+func RunCreate(cmd *cobra.Command, args []string) error {
 	name, _ := cmd.Flags().GetString("name")
 	project, _ := cmd.Flags().GetString("project")
 	env, _ := cmd.Flags().GetString("environment")
@@ -79,9 +79,7 @@ var-saver create --name "some-api-url" --value "https://my-api.com" --overwrite
 
 var-saver create --name "some-api-url" --value "https://my-api.com" --project "my-project" --environment "dev"
 `,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return RunCreate(cmd)
-	},
+	RunE:    RunCreate,
 	PreRunE: ValidateCreate,
 }
 
