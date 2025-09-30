@@ -38,6 +38,7 @@ func (sv *SavedVariables) GetProject(projName string) *Project {
 	if !ok {
 		p = &Project{
 			Variables: make([]*Variable, 0),
+			Name:      nameNorm,
 		}
 		sv.Projects[nameNorm] = p
 	}

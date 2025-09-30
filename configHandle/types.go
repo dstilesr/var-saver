@@ -1,5 +1,10 @@
 package confighandle
 
+// PrintableItem are items that can be printed to the CLI.
+type PrintableItem interface {
+	FormatString() string
+}
+
 // Metadata represents metadata of the application and config file.
 type Metadata struct {
 	Version     string `toml:"app-version"`
@@ -16,6 +21,7 @@ type Variable struct {
 
 // Project contains all the variables associated with a given project
 type Project struct {
+	Name      string      `toml:"name"`
 	Variables []*Variable `toml:"variable"`
 }
 

@@ -11,6 +11,7 @@ file-last-updated = "2020-01-01T12:01:15Z"
 app-name = "var-saver"
 
 [project.proj1]
+name = "proj1"
 
 [[project.proj1.variable]]
 name = "v1"
