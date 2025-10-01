@@ -46,7 +46,7 @@ projects --detail
 		detail, _ := cmd.Flags().GetBool("detail")
 		fmt.Println("Projects:")
 		for _, p := range sv.Projects {
-			if detail {
+			if !detail {
 				fmt.Printf("- '%s' (%d variables)\n", p.Name, len(p.Variables))
 			} else {
 				confighandle.PrintItem(p)
