@@ -68,3 +68,14 @@ func (p *Project) GetVariable(name, env string) (*Variable, error) {
 	}
 	return nil, fmt.Errorf("variable '%s' not found for env '%s'", name, env)
 }
+
+// GetVariable gets a variable from the config. Returns error if the Variable
+// does not exist, or if the project does not exist.
+func (sv *SavedVariables) GetVariable(project, name, env string) (*Variable, error) {
+	project = strings.ToLower(project)
+	p, ok := sv.Projects[project]
+	if !ok {
+		return nil, fmt.Errorf("project '%s' not found", project)
+	}
+	return p.GetVariable(name, env)
+}
