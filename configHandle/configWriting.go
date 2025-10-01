@@ -87,3 +87,54 @@ func (sv *SavedVariables) AddVariable(proj, name, env, value string, overwrite b
 	p.Variables = append(p.Variables, &newVar)
 	return nil
 }
+
+// RemoveVariable Removes a variable from the given project. If the variable
+// was not found, returns an error.
+func (p *Project) RemoveVariable(name, env string) error {
+	new_vars := make([]*Variable, 0, len(p.Variables))
+	name = strings.ToLower(name)
+	env = strings.ToLower(env)
+
+	removed := false
+	for _, v := range p.Variables {
+		if v.Name == name && v.Environment == env {
+			removed = true
+		} else {
+			new_vars = append(new_vars, v)
+		}
+	}
+
+	p.Variables = new_vars
+	if !removed {
+		return fmt.Errorf(
+			"Variable '%s' for environment '%s' not found in the '%s' project",
+			name,
+			env,
+			p.Name,
+		)
+	}
+	return nil
+}
+
+// RemoveProject Deletes a project from the config along with all its
+// associated variables. Returns error if the project does not exist.
+func (sv *SavedVariables) RemoveProject(name string) error {
+	name = strings.ToLower(name)
+	_, ok := sv.Projects[name]
+	if !ok {
+		return fmt.Errorf("Project '%s' not found", name)
+	}
+	delete(sv.Projects, name)
+	return nil
+}
+
+// RemoveVariable Removes a variable from a project in the config
+func (sv *SavedVariables) RemoveVariable(project, name, env string) error {
+	name = strings.ToLower(name)
+	project = strings.ToLower(project)
+	p, ok := sv.Projects[project]
+	if !ok {
+		return fmt.Errorf("Project '%s' not found", name)
+	}
+	return p.RemoveVariable(name, env)
+}

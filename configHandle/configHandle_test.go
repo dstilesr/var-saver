@@ -162,3 +162,45 @@ func TestAddVar(t *testing.T) {
 		t.Error("Incorrect variable properties after adding new")
 	}
 }
+
+// TestProjectRemoveVar tests the remove var method of projects
+func TestProjectRemoveVar(t *testing.T) {
+	sv := GetTestConfigObj()
+	p := sv.Projects["proj1"]
+
+	err := p.RemoveVariable("var1", "env1")
+	if err != nil {
+		t.Error("Failed to delete variable from project")
+	}
+	_, err = p.GetVariable("var1", "env1")
+	if err == nil {
+		t.Error("No error when retrieving deleted variable")
+	}
+
+	v, err := p.GetVariable("var1", "env2")
+	if err != nil {
+		t.Error("Failed to get variable after deletion")
+	}
+	if v == nil || v.Value != "val3" {
+		t.Error("Failed to retrieve variable after deletion")
+	}
+
+	err = p.RemoveVariable("nonexistent", "nonexistent")
+	if err == nil {
+		t.Error("No error when deleting invalid variable")
+	}
+}
+
+// TestSVRemoveVar tests deleting a variable from the overall config object
+func TestSVRemoveVar(t *testing.T) {
+	sv := GetTestConfigObj()
+	err := sv.RemoveVariable("proj-nonexistent", "var1", "env1")
+	if err == nil {
+		t.Error("Deleted variable from nonexistent project")
+	}
+
+	err = sv.RemoveVariable("proj1", "nonexistent", "nonexistent")
+	if err == nil {
+		t.Error("Deleted nonexistent variable from config")
+	}
+}

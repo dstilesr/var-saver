@@ -7,22 +7,27 @@ const AppName = "var-saver"
 // Templates for printing to CLI
 
 const varTemplate = `*Variable*
-  Name: %s
-  Environment: %s
+  Name: {{ .Name }}
+  Environment: {{ .Environment }}
 `
 
 const metaTemplate = `---------------------------------------
 *Metadata*
-Application: %s
-Version: %s
-Variables Last Updated: %s
+Application: {{ .AppName }}
+Version: {{ .Version }}
+Variables Last Updated: {{ .LastUpdated }}
 ---------------------------------------
 `
 
 const projectTemplate = `
-**Project: '%s'**
-Total Variables: %d
+**Project: '{{ .Name }}'**
+Total Variables: {{ .Variables | len }}
 Variables:
-%s
+{{- range .Variables }}
+*****
+Variable:
+    name: {{ .Name }}
+    env: {{ .Environment }}
+{{- end }}
 =======================================
 `
