@@ -59,3 +59,10 @@ To delete a specific variable use
 ```sh
 var-saver delete variable --name my-var --environment dev --project my-project
 ```
+
+When in doubt, you can always call a command with the `--help` flag!
+```sh
+var-saver --help
+
+var-saver "<command>" --help
+```
