@@ -40,7 +40,7 @@ Use example:
 delete project --name my-project
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		project, _ := cmd.Flags().GetString("project")
+		project, _ := cmd.Flags().GetString("name")
 		project = strings.ToLower(strings.TrimSpace(project))
 
 		sv := confighandle.ReadConfig()
