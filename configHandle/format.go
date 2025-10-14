@@ -3,9 +3,9 @@ package confighandle
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"io"
 	"log/slog"
+	"text/template"
 )
 
 // RenderTemplate Renders the template and returns the result as a string
