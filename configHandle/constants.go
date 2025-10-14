@@ -21,11 +21,12 @@ Variables Last Updated: {{ .LastUpdated }}
 
 const projectTemplate = `
 **Project: '{{ .Name }}'**
-{{ .Description }}
+About: {{ .Description }}
 Total Variables: {{ .Variables | len }}
 Variables:
+----------
 {{- range .Variables }}
-*****
+
 Variable:
     name: {{ .Name }}
     env: {{ .Environment }}
