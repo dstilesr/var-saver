@@ -131,6 +131,20 @@ var-saver create variable --name "some-api-url" --value "https://my-api.com" --p
 	PreRunE: ValidateCreateVar,
 }
 
+// createPrj represents the command to create a project
+var createPrj = &cobra.Command{
+	Use:   "project --name '<project name>' [--description '<description for the project>']",
+	Short: "Create a new project",
+	Long: `Create a new project to associate variables.
+You may provide a description for the project as well as a name.
+
+Usage Example:
+var-saver create project --name "my-proj" --description "This is a really cool project"
+`,
+	RunE:    RunCreatePrj,
+	PreRunE: ValidateCreatePrj,
+}
+
 func init() {
 	rootCmd.AddCommand(createCmd)
 
@@ -156,4 +170,9 @@ func init() {
 	createVar.MarkFlagRequired("value")
 
 	// Create Project command
+	createCmd.AddCommand(createPrj)
+	createPrj.Flags().StringP("name", "n", "", "Name of project to add")
+	createPrj.Flags().StringP("description", "d", "", "Description for the project")
+
+	createPrj.MarkFlagRequired("name")
 }
