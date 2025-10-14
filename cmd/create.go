@@ -4,6 +4,7 @@ Copyright © 2025 NAME HERE
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	cfgh "var-saver/configHandle"
@@ -11,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ValidateCreate Validates the inpút flags / args to the create command
-func ValidateCreate(cmd *cobra.Command, args []string) error {
+// ValidateCreateVar Validates the inpút flags / args to the create command
+func ValidateCreateVar(cmd *cobra.Command, args []string) error {
 	name, _ := cmd.Flags().GetString("name")
 	project, _ := cmd.Flags().GetString("project")
 	env, _ := cmd.Flags().GetString("environment")
@@ -37,8 +38,8 @@ func ValidateCreate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// RunCreate Runs the command to add a new variable
-func RunCreate(cmd *cobra.Command, args []string) error {
+// RunCreateVar Runs the command to add a new variable
+func RunCreateVar(cmd *cobra.Command, args []string) error {
 	name, _ := cmd.Flags().GetString("name")
 	project, _ := cmd.Flags().GetString("project")
 	env, _ := cmd.Flags().GetString("environment")
@@ -67,9 +68,50 @@ func RunCreate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+// ValidateCreatePrj Validates the inpút flags / args to the create command
+func ValidateCreatePrj(cmd *cobra.Command, args []string) error {
+	name, _ := cmd.Flags().GetString("name")
+
+	// Check inputs
+	if strings.TrimSpace(name) == "" {
+		return fmt.Errorf("ERROR: You must provide a nonempty project name")
+	}
+	return nil
+}
+
+// RunCreatePrj Runs the command to add a new project
+func RunCreatePrj(cmd *cobra.Command, args []string) error {
+	name, _ := cmd.Flags().GetString("name")
+	description, _ := cmd.Flags().GetString("description")
+
+	description = strings.TrimSpace(description)
+	name = strings.TrimSpace(name)
+
+	sv := cfgh.ReadConfig()
+	defer sv.SaveCfg()
+
+	err := sv.AddProject(name, description)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Project '%s' added successfully!\n", name)
+	return nil
+}
+
 // createCmd represents the create command
 var createCmd = &cobra.Command{
-	Use:   "create --name <variable name> --value <variable value> [--project <project name>] [--environment <env name>] [--overwrite]",
+	Use:   "create {variable|project} [options]",
+	Short: "Create a new variable or project.",
+	Long:  `Create a new variable or project for later reference.`,
+	RunE: func(c *cobra.Command, args []string) error {
+		return errors.New("you must specify whether you want to create a variable or project")
+	},
+}
+
+// createVar represents the command to create a new variable
+var createVar = &cobra.Command{
+	Use:   "variable --name <variable name> --value <variable value> [--project <project name>] [--environment <env name>] [--overwrite]",
 	Short: "Create a new variable.",
 	Long: `Create a new variable for later reference.
 To create a variable you must provide the variable name and value. You can
@@ -79,36 +121,39 @@ the '--overwrite' flag.
 
 Usage examples:
 
-var-saver create --name "some-api-url" --value "https://my-api.com"
+var-saver create variable --name "some-api-url" --value "https://my-api.com"
 
-var-saver create --name "some-api-url" --value "https://my-api.com" --overwrite
+var-saver create variable --name "some-api-url" --value "https://my-api.com" --overwrite
 
-var-saver create --name "some-api-url" --value "https://my-api.com" --project "my-project" --environment "dev"
+var-saver create variable --name "some-api-url" --value "https://my-api.com" --project "my-project" --environment "dev"
 `,
-	RunE:    RunCreate,
-	PreRunE: ValidateCreate,
+	RunE:    RunCreateVar,
+	PreRunE: ValidateCreateVar,
 }
 
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	// Flags + settings
-	createCmd.Flags().StringP("name", "n", "", "Name of variable to add")
-	createCmd.Flags().String("value", "", "Value of the variable")
+	// Create Variable command
+	createCmd.AddCommand(createVar)
+	createVar.Flags().StringP("name", "n", "", "Name of variable to add")
+	createVar.Flags().String("value", "", "Value of the variable")
 
-	createCmd.Flags().StringP("project", "p", "common", "Name of project related to variable")
-	createCmd.Flags().StringP(
+	createVar.Flags().StringP("project", "p", "common", "Name of project related to variable")
+	createVar.Flags().StringP(
 		"environment",
 		"e",
 		"default",
 		"Name of environment associated to var to add",
 	)
-	createCmd.Flags().Bool(
+	createVar.Flags().Bool(
 		"overwrite",
 		false,
 		"Whether to overwrite the variable if it exists",
 	)
 
-	createCmd.MarkFlagRequired("name")
-	createCmd.MarkFlagRequired("value")
+	createVar.MarkFlagRequired("name")
+	createVar.MarkFlagRequired("value")
+
+	// Create Project command
 }

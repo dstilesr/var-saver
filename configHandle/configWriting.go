@@ -139,9 +139,9 @@ func (sv *SavedVariables) RemoveVariable(project, name, env string) error {
 	return p.RemoveVariable(name, env)
 }
 
-// CreateProject creates a new project with the given name and description.
+// AddProject creates a new project with the given name and description.
 // Returns an error if a project with that name already exists.
-func (sv *SavedVariables) CreateProject(name, desc string) error {
+func (sv *SavedVariables) AddProject(name, desc string) error {
 	_, exists := sv.Projects[name]
 	if exists {
 		return fmt.Errorf("Project with name '%s' already exists", name)
