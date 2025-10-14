@@ -37,9 +37,9 @@ func (sv *SavedVariables) SaveCfg() error {
 	return err
 }
 
-// GetProject gets a project by name from the config. If it does not already
+// GetOrCreateProject gets a project by name from the config. If it does not already
 // exists, a new project is created.
-func (sv *SavedVariables) GetProject(projName string) *Project {
+func (sv *SavedVariables) GetOrCreateProject(projName string) *Project {
 	nameNorm := strings.ToLower(projName)
 	p, ok := sv.Projects[nameNorm]
 
@@ -67,7 +67,7 @@ func (sv *SavedVariables) AddVariable(proj, name, env, value string, overwrite b
 		}
 
 		// Update existing
-		p := sv.GetProject(proj)
+		p := sv.GetOrCreateProject(proj)
 		v, err := p.GetVariable(name, env)
 		if v == nil || err != nil {
 			slog.Error("Could not get existing variable!")
@@ -77,7 +77,7 @@ func (sv *SavedVariables) AddVariable(proj, name, env, value string, overwrite b
 		return nil
 	}
 
-	p := sv.GetProject(proj)
+	p := sv.GetOrCreateProject(proj)
 	newVar := Variable{
 		Name:        strings.ToLower(name),
 		Environment: strings.ToLower(env),
@@ -137,4 +137,25 @@ func (sv *SavedVariables) RemoveVariable(project, name, env string) error {
 		return fmt.Errorf("Project '%s' not found", name)
 	}
 	return p.RemoveVariable(name, env)
+}
+
+// CreateProject creates a new project with the given name and description.
+// Returns an error if a project with that name already exists.
+func (sv *SavedVariables) CreateProject(name, desc string) error {
+	_, exists := sv.Projects[name]
+	if exists {
+		return fmt.Errorf("Project with name '%s' already exists", name)
+	}
+
+	sv.Projects[name] = &Project{
+		Name:        name,
+		Description: desc,
+		Variables:   make([]*Variable, 0),
+	}
+	return nil
+}
+
+// AddDescription Updates the descriptiopn of a project
+func (p *Project) AddDescription(d string) {
+	p.Description = d
 }

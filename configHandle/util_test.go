@@ -5,7 +5,8 @@ func GetTestConfigObj() *SavedVariables {
 		Meta: GetMetadata(),
 		Projects: map[string]*Project{
 			"proj1": &Project{
-				Name: "proj1",
+				Name:        "proj1",
+				Description: "This is project proj1",
 				Variables: []*Variable{
 					&Variable{
 						Name:        "var1",
@@ -25,7 +26,8 @@ func GetTestConfigObj() *SavedVariables {
 				},
 			},
 			"proj2": &Project{
-				Name: "proj1",
+				Name:        "proj2",
+				Description: "This is project proj2",
 				Variables: []*Variable{
 					&Variable{
 						Name:        "var4",

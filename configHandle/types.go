@@ -21,8 +21,9 @@ type Variable struct {
 
 // Project contains all the variables associated with a given project
 type Project struct {
-	Name      string      `toml:"name"`
-	Variables []*Variable `toml:"variable"`
+	Name        string      `toml:"name"`
+	Description string      `toml:"description"`
+	Variables   []*Variable `toml:"variable"`
 }
 
 // SavedVariables represents all saved contents in the toml config file.

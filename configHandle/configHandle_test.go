@@ -7,12 +7,12 @@ func TestGetProject(t *testing.T) {
 	sv := NewConfig()
 	var p1, p2, p3, p4 string = "proj1", "PROj1", "proj3", "pRoJ4"
 
-	sv.GetProject(p1)
+	sv.GetOrCreateProject(p1)
 	if len(sv.Projects) != 1 {
 		t.Error("Did not create a single project correctly")
 	}
 
-	sv.GetProject(p2)
+	sv.GetOrCreateProject(p2)
 	if len(sv.Projects) != 1 {
 		t.Error("Did not match project name when letter case changed")
 	}
@@ -21,8 +21,8 @@ func TestGetProject(t *testing.T) {
 		t.Error("Project name not stored in lowercase")
 	}
 
-	sv.GetProject(p3)
-	po := sv.GetProject(p4)
+	sv.GetOrCreateProject(p3)
+	po := sv.GetOrCreateProject(p4)
 
 	if len(sv.Projects) != 3 {
 		t.Error("Did not create expected number of projects")

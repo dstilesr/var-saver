@@ -12,6 +12,7 @@ app-name = "var-saver"
 
 [project.proj1]
 name = "proj1"
+description = "This is project proj1"
 
 [[project.proj1.variable]]
 name = "v1"
@@ -39,6 +40,10 @@ value = "val3"
 	p, ok := sv.Projects["proj1"]
 	if !ok {
 		t.Error("Did not find expected project")
+	}
+
+	if p.Description != "This is project proj1" {
+		t.Error("Did not parse expected project description")
 	}
 
 	if len(p.Variables) != 3 {
