@@ -1,5 +1,14 @@
 # Var Saver
 
+## Table of Contents
+- [Overview](#overview)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Adding Variables](#adding-variables)
+  - [List Existing Variables and Projects](#list-existing-variables-and-projects)
+  - [Deleting](#deleting)
+  - [Backups](#backups)
+
 ## Overview
 This is a small CLI solution to store and retrieve variables. This came about from the pain of having to
 look through countless `.env` and config files whenever I needed the URL to X or Y API and similar. This
@@ -58,6 +67,30 @@ var-saver delete project --name my-project
 To delete a specific variable use
 ```sh
 var-saver delete variable --name my-var --environment dev --project my-project
+```
+
+### Backups
+You can backup your variables file to S3. First, configure the S3 location:
+```sh
+var-saver backup configure --bucket my-bucket --prefix "path/to/backup"
+
+# Shorthand version with optional AWS profile
+var-saver backup configure -b my-bucket -p "path/to/backup" --profile my-aws-profile
+```
+The `bucket` and `prefix` flags are required. The `profile` flag is optional and specifies which AWS profile to use
+for credentials. If not set, default AWS credentials will be used.
+
+To save a backup:
+```sh
+var-saver backup save
+
+# Refresh the local file's updated date after backup
+var-saver backup save --refresh
+```
+
+To delete the backup file from S3:
+```sh
+var-saver backup delete
 ```
 
 When in doubt, you can always call a command with the `--help` flag!
