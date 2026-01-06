@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	cfgh "var-saver/configHandle"
 
 	"github.com/spf13/cobra"
@@ -59,11 +60,13 @@ Otherwise, default AWS credentials will be used.
 Use --refresh to update the local variables file's updated date after the backup.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Saving backup...")
 		sv := cfgh.ReadConfig()
 		err := sv.SaveBackup()
 		if err != nil {
 			return err
 		}
+		fmt.Println("Backup saved successfully")
 
 		refresh, _ := cmd.Flags().GetBool("refresh")
 		if refresh {
