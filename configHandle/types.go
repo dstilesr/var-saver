@@ -26,8 +26,16 @@ type Project struct {
 	Variables   []*Variable `toml:"variable"`
 }
 
+// Configuration to save backup file to S3
+type S3Config struct {
+	Bucket  string `toml:"bucket"`
+	Prefix  string `toml:"prefix"`
+	Profile string `toml:"profile"`
+}
+
 // SavedVariables represents all saved contents in the toml config file.
 type SavedVariables struct {
-	Meta     *Metadata           `toml:"meta"`
-	Projects map[string]*Project `toml:"project"`
+	Meta      *Metadata           `toml:"meta"`
+	BackupCfg *S3Config           `toml:"backup-config"`
+	Projects  map[string]*Project `toml:"project"`
 }

@@ -155,6 +155,15 @@ func (sv *SavedVariables) AddProject(name, desc string) error {
 	return nil
 }
 
+// SetS3Config sets the configuration to store backups of the config file to S3
+func (sv *SavedVariables) SetS3Config(bkt, dir, prof string) {
+	sv.BackupCfg = &S3Config{
+		Bucket:  bkt,
+		Prefix:  dir,
+		Profile: prof,
+	}
+}
+
 // AddDescription Updates the descriptiopn of a project
 func (p *Project) AddDescription(d string) {
 	p.Description = d
