@@ -134,6 +134,34 @@ func GetS3Client(prof string) (*s3.Client, error) {
 	return s3.NewFromConfig(cfg), nil
 }
 
+// DeleteBackupFile deletes the backup file on S3.
+func (sv *SavedVariables) DeleteBackupFile() error {
+	if !sv.HasBackupCfg() {
+		return errors.New("Backup configuration has not been set")
+	}
+	c, err := GetS3Client(sv.BackupCfg.Profile)
+	if err != nil {
+		return err
+	}
+
+	key := sv.getS3Key()
+	_, err = c.DeleteObject(
+		context.TODO(),
+		&s3.DeleteObjectInput{
+			Bucket: &sv.BackupCfg.Bucket,
+			Key:    &key,
+		},
+	)
+	var nf *types.NotFound
+	if err == nil {
+		return nil
+	} else if errors.As(err, &nf) {
+		fmt.Println("Backup file does not exist")
+		return nil
+	}
+	return err
+}
+
 // getS3Key returns the S3 key for the saved variables.
 func (sv *SavedVariables) getS3Key() string {
 	return fmt.Sprintf("%s/vars.toml", sv.BackupCfg.Prefix)

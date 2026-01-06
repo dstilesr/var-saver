@@ -13,7 +13,7 @@ import (
 
 // backupCmd represents the backup command
 var backupCmd = &cobra.Command{
-	Use:   "backup {configure|save} [options]",
+	Use:   "backup {configure|save|delete} [options]",
 	Short: "Handle backups of the application data to S3",
 	Long:  `Subcommands handle various operations related to saving config backups to S3.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -76,6 +76,24 @@ Use --refresh to update the local variables file's updated date after the backup
 	},
 }
 
+var deleteBackupCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete the backup file from S3",
+	Long: `Delete the backup file from S3.
+This will remove the backup file at 's3://{bucket}/{prefix}/vars.toml' using the configured settings.
+`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Warning: This will permanently delete the backup file from S3")
+		sv := cfgh.ReadConfig()
+		err := sv.DeleteBackupFile()
+		if err != nil {
+			return err
+		}
+		fmt.Println("Backup deleted successfully")
+		return nil
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(backupCmd)
 
@@ -90,4 +108,7 @@ func init() {
 	// Save subcommand setup
 	backupCmd.AddCommand(saveBackupCmd)
 	saveBackupCmd.Flags().BoolP("refresh", "r", false, "Refresh the local variables file's updated date after backup")
+
+	// Delete subcommand setup
+	backupCmd.AddCommand(deleteBackupCmd)
 }
