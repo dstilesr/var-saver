@@ -14,10 +14,16 @@ import (
 func (m *Metadata) Update() {
 	curr_time := time.Now().UTC().Format(time.RFC3339)
 	m.LastUpdated = curr_time
+
+	if m.Version != Version {
+		fmt.Printf("Updating metadata application version to '%s'\n", Version)
+		m.Version = Version
+	}
 }
 
 // SaveCfg saves the configuration to the config file path
 func (sv *SavedVariables) SaveCfg() error {
+
 	fp, err := ConfigPath()
 	if err != nil {
 		return err

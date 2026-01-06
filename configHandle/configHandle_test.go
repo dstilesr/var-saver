@@ -204,3 +204,54 @@ func TestSVRemoveVar(t *testing.T) {
 		t.Error("Deleted nonexistent variable from config")
 	}
 }
+
+// Test the check that verifies if backup configuration is present
+func TestHasBackupCfg(t *testing.T) {
+	test_toml := `
+[meta]
+app-version = "v0.0.1"
+file-last-updated = "2020-01-01T12:01:15Z"
+app-name = "var-saver"
+
+[project.proj1]
+name = "proj1"
+description = "This is project proj1"
+
+[[project.proj1.variable]]
+name = "v1"
+env = "env1"
+value = "val1"
+
+[[project.proj1.variable]]
+name = "v1"
+env = "env2"
+value = "val2"
+
+[[project.proj1.variable]]
+name = "v2"
+env = "env2"
+value = "val3"
+`
+	sv, err := FromToml([]byte(test_toml))
+	if err != nil {
+		t.Errorf("Failed to parse toml string. Error: %v", err)
+	}
+
+	if sv.HasBackupCfg() {
+		t.Error("Backup configuration is present (not in TOML)")
+	}
+
+	sv.BackupCfg = nil
+	if sv.HasBackupCfg() {
+		t.Error("Backup configuration is present (nil)")
+	}
+
+	sv.BackupCfg = &S3Config{
+		Bucket:  "a-bucket",
+		Prefix:  "a-key",
+		Profile: "",
+	}
+	if !sv.HasBackupCfg() {
+		t.Error("Backup configuration is not marked as present")
+	}
+}
