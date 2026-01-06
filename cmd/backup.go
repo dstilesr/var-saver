@@ -12,7 +12,7 @@ import (
 
 // backupCmd represents the backup command
 var backupCmd = &cobra.Command{
-	Use:   "backup {configure} [options]",
+	Use:   "backup {configure|save} [options]",
 	Short: "Handle backups of the application data to S3",
 	Long:  `Subcommands handle various operations related to saving config backups to S3.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -48,6 +48,31 @@ configure -b my-bucket -p "a/folder" --profile an-aws-profile
 	},
 }
 
+var saveBackupCmd = &cobra.Command{
+	Use:   "save [--refresh]",
+	Short: "Save the variables file to S3 as backup",
+	Long: `Save the variable file backup to S3.
+The file will be saved to 's3://{bucket}/{prefix}/vars.toml', using the values provided in the
+configuration.The configured 'profile' will be used for AWS credentials if it has been set.
+Otherwise, default AWS credentials will be used.
+
+Use --refresh to update the local variables file's updated date after the backup.
+`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		sv := cfgh.ReadConfig()
+		err := sv.SaveBackup()
+		if err != nil {
+			return err
+		}
+
+		refresh, _ := cmd.Flags().GetBool("refresh")
+		if refresh {
+			sv.SaveCfg()
+		}
+		return nil
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(backupCmd)
 
@@ -58,4 +83,8 @@ func init() {
 	backupConfigureCmd.Flags().String("profile", "", "AWS profile to use (optional)")
 	backupConfigureCmd.MarkFlagRequired("bucket")
 	backupConfigureCmd.MarkFlagRequired("prefix")
+
+	// Save subcommand setup
+	backupCmd.AddCommand(saveBackupCmd)
+	saveBackupCmd.Flags().BoolP("refresh", "r", false, "Refresh the local variables file's updated date after backup")
 }
