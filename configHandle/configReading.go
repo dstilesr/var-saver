@@ -55,6 +55,9 @@ func ReadConfig() *SavedVariables {
 		slog.Error("Unable to parse config", "error", err)
 		panic("could not parse cfg file")
 	}
+	if data.Projects == nil {
+		data.Projects = make(map[string]*Project)
+	}
 	return data
 }
 
